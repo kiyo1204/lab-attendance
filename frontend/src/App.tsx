@@ -1,5 +1,5 @@
 // FormEvent: イベント対象がformであることを型で示す
-import { useState, type FormEvent } from "react"
+import { useEffect, useState, type FormEvent } from "react"
 import type { Filter, Todo } from "./types/todo"
 
 // Appコンポーネントを定義
@@ -7,8 +7,21 @@ function App(){
   // 変更しない変数の定義
   // title=現在値, setTitle=更新関数, ("")=初期値
   const [title, setTitle] = useState("")
-  const [todos, setTodos] = useState<Todo[]>([])
+  const [todos, setTodos] = useState<Todo[]>(() => {
+    const saved = localStorage.getItem("todos")
+    if(!saved) return []
+    
+    try{
+      return JSON.parse(saved) as Todo[]
+    }catch{
+      return []
+    }
+  })
   const [filter, setFilter] = useState<Filter>("all")
+  
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos))
+  }, [todos])
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     // 通常のフォーム送信によるページ再読み込みを止める
