@@ -1,0 +1,133 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family:
+        "Noto Sans JP",
+        sans-serif;
+
+    background: rgb(238, 237, 237);
+    color: #111
+}
+
+.dashboard {
+    min-height: 100vh;
+    padding: 32px 60px;
+}
+
+.dashboard-header {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 40px;
+}
+
+.dashboard-header h1 {
+    margin: 0;
+
+    font-size: 32px;
+    font-weight: 700;
+}
+
+
+/* 研究室の状況 */
+.lab-status-card {
+    background: white;
+
+    border: 1px solid #dbe2ea;
+
+    border-radius: 24px;
+
+    padding: 24px 40px;
+
+    margin-bottom: 24px;
+
+    min-height: 180px;
+}
+
+.lab-status-card h2 {
+    margin: 0 0 12px;
+
+    font-size: 22px;
+}
+
+.lab-status {
+    margin: 0;
+
+    font-size: 48px;
+    font-weight: bold;
+}
+
+
+/* メンバー一覧 */
+.member-card {
+    background: white;
+
+    border: 1px solid #dbe2ea;
+
+    border-radius: 24px;
+
+    padding: 18px 40px 32px
+}
+
+.member-card h2 {
+    margin-top: 0;
+
+    font-size: 22px;
+}
+
+.member-table {
+    max-width: 760px;
+}
+
+.member-header, .member-row {
+    display: grid;
+
+    grid-template-columns:
+        1fr
+        200px;
+    
+    align-items: center;
+
+    min-height: 58px;
+}
+
+.member-header {
+    font-size: 22px;
+
+    font-weight: bold;
+}
+
+.member-row {
+    font-size: 18px;
+}
+
+
+/* ステータスの色を付ける */
+.status-badge {
+    display: inline-flex;
+
+    justify-content: center;
+    align-items: center;
+
+    width: 150px;
+    height: 38px;
+
+    border-radius: 8px;
+
+    color: white;
+
+    font-weight: bold;
+}
+
+.status-badge.present {
+    background: #22c55e;
+}
+
+.status-badge.absent {
+    background: #ef4444;
+}
