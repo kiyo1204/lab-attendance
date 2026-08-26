@@ -1,0 +1,28 @@
+{
+    "name": "lab-attendance",
+    "dockerComposeFile": "compose.yaml",
+    "service": "web",
+    "workspaceFolder": "/app",
+
+    "features": {
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "20"
+        }
+    },
+
+    "forwardPorts": [3000, 8000, 3306],
+
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode",
+                "eamodio.gitlens"
+            ]
+        }
+    },
+
+    "remoteUser": "vscode"
+}

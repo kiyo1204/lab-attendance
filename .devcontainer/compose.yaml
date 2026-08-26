@@ -1,0 +1,25 @@
+services:
+  db:
+    image: mysql:9.6
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE} #のちのDB接続設定で使うDB名と同じにする必要あり
+      MYSQL_USER: ${MYSQL_USER}   #のちのDB接続設定で使うDB名と同じにする必要あり
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD} #のちのDB接続設定で使うDB名と同じにする必要あり
+
+  web:
+    image: mcr.microsoft.com/devcontainers/python:3.12
+    volumes:
+      - .:/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    command: sleep infinity
+
+volumes:
+  db_data:
+    
