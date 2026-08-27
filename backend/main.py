@@ -33,19 +33,21 @@ students = [
 
 attendances = []
 
-#学生登録あとで
+#学生登録
 class PostStudents(BaseModel):
     studentId:int
     studentName:str
     cardId:int
 
+
+class AttendanceUpdate(BaseModel):
+    status:int | None = None
+
 #打刻
-class PunchUpdate(BaseModel):
-    Status:int | None = None
 class Punch(BaseModel):
     cardId:int
 
-#学生登録あとでやる
+#学生登録
 @app.post("/students")
 def post_students(data:PostStudents):
     students.append(
@@ -94,17 +96,18 @@ def get_attendances():
     return attendances
 
 #打刻修正
+def find_punch(id:int):
+    for i in attendances:
+        if i["id"] == id:
+            return i
+    raise HTTPException(status_code=404,detail="ID not found")
 
-def find_punch(id:int) -> Punch:
-    attendance = attendance.get(id)
-    if attendance is None:
-        raise HTTPException(status_code=404,detail="Task not found")
-    return attendance
-
-@app.patch("/attendances/{id}",response_model=Punch)
-def update_punch(id:int,data:PunchUpdate):
+@app.patch("/attendances/{id}")
+def update_attendance(id:int,data:AttendanceUpdate):
     current = find_punch(id)
     changes = data.model_dump(exclude_unset=True)
-    
+    current.update(changes)
+    return current
+
 #打刻削除
-#あとで
+#あとでねーーー
