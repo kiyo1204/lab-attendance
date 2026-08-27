@@ -5,12 +5,14 @@
     "workspaceFolder": "/app",
 
     "features": {
-        "ghcr.io/devcontainers/features/node:1": {
+        "ghcr.io/devcontainers/features/node:2.1.0": {
             "version": "20"
         }
     },
 
-    "forwardPorts": [3000, 8000, 3306],
+    "forwardPorts": [5173, 8000, "db:3306"],
+
+    "postCreateCommand": "cd frontend && npm install ",
 
     "customizations": {
         "vscode": {

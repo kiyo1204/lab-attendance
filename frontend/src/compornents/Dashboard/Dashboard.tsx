@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom"
 
 import LabStatus from "./LabStatus"
-import MemberList from "./memberList"
+import MemberList from "./MemberList"
 
 function Dashboard() {
     return (
