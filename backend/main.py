@@ -18,12 +18,16 @@ students = [
     {
         "student_id": 2472124,
         "name": "やまだ",
-        "card_id": 11001100
+        "card_id": 11001100,
+        # 追加項目
+        "status": "在室"
     },
     {
         "student_id": 2300000,
         "name": "たなか",
-        "card_id": 11111111
+        "card_id": 11111111,
+        # 追加項目
+        "status": "欠席"
     }
 ]
 
@@ -48,7 +52,9 @@ def post_students(data:PostStudents):
         {
             "student_id":data.studentId,
             "name":data.studentName,
-            "card_id":data.cardId
+            "card_id":data.cardId,
+            # 追加項目
+            "status": data.status
         }
     )
 
@@ -95,7 +101,7 @@ def find_punch(id:int) -> Punch:
         raise HTTPException(status_code=404,detail="Task not found")
     return attendance
 
-@app.patch("/attendances/{id}",response_mosel=Punch)
+@app.patch("/attendances/{id}",response_model=Punch)
 def update_punch(id:int,data:PunchUpdate):
     current = find_punch(id)
     changes = data.model_dump(exclude_unset=True)
