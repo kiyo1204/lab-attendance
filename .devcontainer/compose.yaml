@@ -14,8 +14,7 @@ services:
     image: mcr.microsoft.com/devcontainers/python:3.12
     volumes:
       - ..:/app
-    ports:
-      - "5173:5173"
+
     depends_on:
       - db
     command: sleep infinity
