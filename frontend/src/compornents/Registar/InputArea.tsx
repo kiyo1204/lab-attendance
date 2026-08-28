@@ -9,6 +9,10 @@ const InputArea = () => {
 
                 <label htmlFor="name" style={{ display: "block", marginBottom: "2px" }}>名前</label>
                 <input type="text" id="name" />
+
+                <label htmlFor="iccard"style={{ display: "block", marginBottom: "2px" }}>ICカード</label>
+                <input type="button" id="iccard" value="ここをクリック" />
+                
             </div>
         </section>
     )

@@ -20,14 +20,14 @@ students = [
         "name": "やまだ",
         "card_id": 11001100,
         # 追加項目
-        "status": "在室"
+        "status": "1"
     },
     {
         "student_id": 2300000,
         "name": "たなか",
         "card_id": 11111111,
         # 追加項目
-        "status": "欠席"
+        "status": "0"
     }
 ]
 
@@ -111,3 +111,12 @@ def update_attendance(id:int,data:AttendanceUpdate):
 
 #打刻削除
 #あとでねーーー
+
+
+
+# -- 研究室の状態の操作 Edit by kiyo --
+test_status = "ゼミ中"
+
+@app.get("/labStatus")
+def get_labStatus():
+    return test_status
