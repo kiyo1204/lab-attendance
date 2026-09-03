@@ -1,10 +1,17 @@
 import { useEffect, useState } from "react"
 //import { members } from "../../data/members"
 import StatusBadge from "./StatusBadge"
+import type { MemberStatus } from "../../types"
 
+type Student = {
+    studentId: string
+    grade: string
+    name: string
+    status: string
+}
 
 const MemberList = () => {
-    const [members, setMembers] = useState([])
+    const [members, setMembers] = useState<Student[]>([])
     const [error, setError] = useState("")
 
     useEffect( () => {
@@ -24,25 +31,28 @@ const MemberList = () => {
             <h2>研究室メンバー</h2>
 
             <div className="member-table">
-                <div className="member-header">
-                    <span>氏名</span>
-                    <span>在室状況</span>
-                </div>
-
-                {members.map((member) => {
-                    const status = member.status
-                    const convertStatus = 
-                        status === "1" ? "在室":
-                        status === "0" ? "退室":
-                        "不明"
-                    
-                    return (
-                    <div className="member-row" key={member.student_id}>
-                        <span>{member.name}</span>
-                        <StatusBadge status={convertStatus} />
+                {[0, 1].map((column) => (
+                <div className="member-column" key={column}>
+                    <div className="member-header">
+                        <span>氏名</span>
+                        <span>学年</span>
+                        <span>在室状況</span>
                     </div>
-                    )
-                })}
+
+                    {members.filter((_, index) => index % 2 === column).map((member) => {
+                    const convertStatus: MemberStatus =
+                        member.status === "1" ? "在室" : "退室"
+
+                    return (
+                        <div className="member-row" key={member.studentId}>
+                            <span>{member.name}</span>
+                            <span>{member.grade}</span>
+                            <StatusBadge status={convertStatus} />
+                        </div>
+                        )
+                    })}
+                </div>
+            ))}
             </div>
         </section>
     )

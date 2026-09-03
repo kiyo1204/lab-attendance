@@ -10,8 +10,8 @@ function Dashboard() {
                 <h1>
                 研究室 出席管理ダッシュボード
                 </h1>
-            <Link to="/registar">
-                <button className="registar-button">登録</button>
+            <Link to="/register">
+                <button className="register-button">登録</button>
             </Link>
         </header>
 
