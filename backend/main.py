@@ -13,21 +13,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 #ダミーデータてきな
 students = [
     {
         "student_id": 2472124,
         "name": "やまだ",
         "card_id": 11001100,
-        # 追加項目
-        "status": "在室"
     },
     {
         "student_id": 2300000,
         "name": "たなか",
         "card_id": 11111111,
-        # 追加項目
-        "status": "欠席"
     }
 ]
 
@@ -55,8 +52,6 @@ def post_students(data:PostStudents):
             "student_id":data.studentId,
             "name":data.studentName,
             "card_id":data.cardId,
-            # 追加項目
-            "status": data.status
         }
     )
 
@@ -84,7 +79,6 @@ def punch(data:Punch):
                             "id": len(attendances)+1,
                             "student_id": i["student_id"],
                             "status": new_status,
-                            #"punched_at":あとでしらべる
                         }
                 )
             return {"studentName":i["name"],"status":new_status}
@@ -94,6 +88,25 @@ def punch(data:Punch):
 @app.get("/attendances")
 def get_attendances():
     return attendances
+
+#reactに返す用
+@app.get("/students/status")
+def get_member_status():
+    result = []
+
+    for i in students:
+        status = 0
+        for j in reversed(attendances):
+            if i["student_id"] == j["student_id"]:
+                status = j["status"]
+                break
+        result.append(
+            {
+                "name": i["name"],
+                "status": j["status"]
+            }
+        )
+    return result
 
 #打刻修正
 def find_punch(id:int):
@@ -109,5 +122,13 @@ def update_attendance(id:int,data:AttendanceUpdate):
     current.update(changes)
     return current
 
+#学生削除 mate
+@app.delete("/students/{student_id}")
+def delete_student(student_id: int):
+
+
 #打刻削除
-#あとでねーーー
+@app.delete("/panch/{id}")
+def delete_punch(id: int):
+    current = find_punch(id)
+    attendances.remove(current)
