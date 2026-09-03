@@ -1,6 +1,6 @@
 export type MemberStatus =
     | "在室"
-    | "欠席"
+    | "退室"
 
 export type Member = {
     id: number

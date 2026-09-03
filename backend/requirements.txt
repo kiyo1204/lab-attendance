@@ -1,2 +1,6 @@
+<<<<<<< HEAD
+fastapi[standard]
+=======
 fastapi==0.141.1
+>>>>>>> main
 pydantic==2.13.4

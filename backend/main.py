@@ -16,17 +16,19 @@ app.add_middleware(
 #ダミーデータてきな
 students = [
     {
-        "student_id": 2472124,
+        "studentId": 2472124,
         "name": "やまだ",
-        "card_id": 11001100,
+        "cardId": 11001100,
         # 追加項目
+        "grade": "B3",
         "status": "1"
     },
     {
-        "student_id": 2300000,
+        "studentId": 2300000,
         "name": "たなか",
-        "card_id": 11111111,
+        "cardId": 11111111,
         # 追加項目
+        "grade": "M1",
         "status": "0"
     }
 ]
@@ -35,9 +37,11 @@ attendances = []
 
 #学生登録
 class PostStudents(BaseModel):
-    studentId:int
-    studentName:str
-    cardId:int
+    studentId: str
+    name: str
+    cardId: str
+    grade: str
+    status: str = "0"
 
 
 class AttendanceUpdate(BaseModel):
@@ -52,11 +56,11 @@ class Punch(BaseModel):
 def post_students(data:PostStudents):
     students.append(
         {
-            "student_id":data.studentId,
-            "name":data.studentName,
-            "card_id":data.cardId,
+            "studentId":data.studentId,
+            "name":data.name,
+            "cardId":data.cardId,
             # 追加項目
-            "status": data.status
+            "grade": data.grade,
         }
     )
 
