@@ -8,12 +8,10 @@ const MemberList = () => {
     const [error, setError] = useState("")
 
     useEffect( () => {
-        fetch("http://127.0.0.1:8080/students").then( (res) => {
+        fetch("http://127.0.0.1:8000/students").then( (res) => {
             if (!res.ok) throw new Error ("HTTP ${res.status}")
             return res.json()
-        })
-        .then(setMembers)
-        .catch( (e) => setError(e.message))
+        }).then(setMembers).catch( (e) => setError(e.message))
     }, [])
 
     if (error) return (
@@ -31,12 +29,20 @@ const MemberList = () => {
                     <span>在室状況</span>
                 </div>
 
-                {members.map((member) => (
+                {members.map((member) => {
+                    const status = member.status
+                    const convertStatus = 
+                        status === "1" ? "在室":
+                        status === "0" ? "退室":
+                        "不明"
+                    
+                    return (
                     <div className="member-row" key={member.student_id}>
                         <span>{member.name}</span>
-                        <StatusBadge status={member.status} />
+                        <StatusBadge status={convertStatus} />
                     </div>
-                ))}
+                    )
+                })}
             </div>
         </section>
     )

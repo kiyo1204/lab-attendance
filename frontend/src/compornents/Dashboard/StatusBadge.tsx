@@ -6,7 +6,7 @@ type Props = {
 
 const statusClassMap: Record<MemberStatus, string> = {
     在室: "present",
-    欠席: "absent",
+    退室: "absent",
 }
 
 const StatusBadge = ({ status }: Props) => {
