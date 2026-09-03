@@ -1,6 +1,2 @@
-<<<<<<< HEAD
 fastapi[standard]
-=======
-fastapi==0.141.1
->>>>>>> 2389139 (backendにrequirements.txtを追加)
 pydantic==2.13.4
