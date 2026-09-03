@@ -107,7 +107,9 @@ def get_member_status():
         result.append(
             {
                 "name": i["name"],
-                "status": status
+                "status": status,
+                "grade": i["grade"],
+
             }
         )
     return result
