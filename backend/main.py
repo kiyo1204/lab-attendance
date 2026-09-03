@@ -20,11 +20,13 @@ students = [
         "student_id": 2472124,
         "name": "やまだ",
         "card_id": 11001100,
+        "grade": "B3",
     },
     {
         "student_id": 2300000,
         "name": "たなか",
         "card_id": 11111111,
+        "grade": "M1",
     }
 ]
 
@@ -35,6 +37,7 @@ class PostStudents(BaseModel):
     studentId:int
     studentName:str
     cardId:int
+    grade:str
 
 
 class AttendanceUpdate(BaseModel):
@@ -52,6 +55,7 @@ def post_students(data:PostStudents):
             "student_id":data.studentId,
             "name":data.studentName,
             "card_id":data.cardId,
+            "grade":data.grade,
         }
     )
 
@@ -103,7 +107,7 @@ def get_member_status():
         result.append(
             {
                 "name": i["name"],
-                "status": j["status"]
+                "status": status
             }
         )
     return result
@@ -123,12 +127,10 @@ def update_attendance(id:int,data:AttendanceUpdate):
     return current
 
 #学生削除 mate
-@app.delete("/students/{student_id}")
-def delete_student(student_id: int):
 
 
 #打刻削除
-@app.delete("/panch/{id}")
+@app.delete("/attendances/{id}")
 def delete_punch(id: int):
     current = find_punch(id)
     attendances.remove(current)
