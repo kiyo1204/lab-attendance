@@ -11,7 +11,8 @@ export default function StudentRegisterForm() {
 
     // 名前，学年，学籍番号
     const [name, setName] = useState("")
-    const [grade, setGrade] = useState("")
+    const [course, setCourse] = useState("B")
+    const [grade, setGrade] = useState("1")
     const [studentNumber, setStudentNumber] = useState("")
 
     const [status, setStatus] = useState("")
@@ -53,7 +54,7 @@ const handleSubmit = async (
 ) => {
     e.preventDefault()
 
-    if (!name.trim() || !studentNumber.trim() || !grade.trim()) {
+    if (!name.trim() || !studentNumber.trim() || !course || !grade) {
         setStatus("名前，学年，学籍番号を入力してください")
         return
     }
@@ -84,8 +85,7 @@ const handleSubmit = async (
                 studentId: studentNumber.trim(),
                 name: name.trim(),
                 cardId: cardId.trim(), 
-                grade: grade.trim(),
-                status: "0"
+                grade: `${course}${grade}`,
             })
         })
 
@@ -96,7 +96,8 @@ const handleSubmit = async (
         // 完了
         setStatus("登録しました")
         setName("")
-        setGrade("")
+        setCourse("B")
+        setGrade("1")
         setStudentNumber("")
 
     } catch (error) {
@@ -108,7 +109,7 @@ const handleSubmit = async (
     }
 
     return (
-        <form className="registar-area" onSubmit={handleSubmit}>
+        <form className="register-form" onSubmit={handleSubmit}>
             <div>
                 <label>
                     名前
@@ -117,6 +118,9 @@ const handleSubmit = async (
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         disabled={isWaiting}
+                        pattern="[^0-9０-９]+"
+                        title="数字以外を入力してください"
+                        required
                     />
                 </label>
             </div>
@@ -124,14 +128,30 @@ const handleSubmit = async (
             <div>
                 <label>
                     学年
-                    <input
-                        type="text"
-                        value={grade}
-                        onChange={(e) =>
-                            setGrade(e.target.value)
-                        }
-                        disabled={isWaiting}
-                        />
+                    <div className="grade-select">
+                        <select
+                            value={course}
+                            onChange={(e) => setCourse(e.target.value)}
+                            disabled={isWaiting}
+                            required
+                        >
+                            <option value="B">B</option>
+                            <option value="M">M</option>
+                            <option value="D">D</option>
+                        </select>
+
+                        <select
+                            value={grade}
+                            onChange={(e) => setGrade(e.target.value)}
+                            disabled={isWaiting}
+                            required
+                        >
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3" disabled={course==="M"}>3</option>
+                            <option value="4" disabled={course!=="B"}>4</option>
+                        </select>
+                    </div>
                 </label>
             </div>
 
@@ -145,6 +165,10 @@ const handleSubmit = async (
                             setStudentNumber(e.target.value)
                         }
                         disabled={isWaiting}
+                        required
+                        minLength={7}
+                        maxLength={7}
+                        title="学籍番号は7文字で入力してください"
                         />
                 </label>
             </div>
