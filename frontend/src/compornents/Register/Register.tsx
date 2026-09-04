@@ -1,18 +1,24 @@
 import { Link } from "react-router-dom"
 import InputArea from "./InputArea"
 
+import backImage from "../img/back.png"
+import "./CSS/style.css"
+
 function Register() {
     return (
         <main className="register">
             <header className="register-header">
                 <h1>登録</h1>
                 <Link to="/">
-                    <button>戻る</button>
+                    <button className="menuButton">
+                        <img src={backImage} alt="" />
+                    </button>
                 </Link>
             </header>
-
-            <InputArea />
             
+            <div className="area-position">
+                <InputArea />
+            </div>
         </main>
     )
 }
