@@ -17,13 +17,13 @@ app.add_middleware(
 #ダミーデータてきな
 students = [
     {
-        "student_id": 2472124,
+        "studentId": 2472124,
         "name": "やまだ",
         "card_id": 11001100,
         "grade": "B3",
     },
     {
-        "student_id": 2300000,
+        "studentId": 2300000,
         "name": "たなか",
         "card_id": 11111111,
         "grade": "M1",
