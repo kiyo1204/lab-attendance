@@ -149,7 +149,7 @@ const handleSubmit = async (
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3" disabled={course==="M"}>3</option>
-                            <option value="4" disabled={course!=="B"}>4</option>
+                            <option value="4" disabled={course==="M"}>4</option>
                         </select>
                     </div>
                 </label>
