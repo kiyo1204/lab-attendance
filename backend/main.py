@@ -16,13 +16,13 @@ app.add_middleware(
 #ダミーデータてきな
 students = [
     {
-        "studentId": 2472124,
+        "student_id": 2472124,
         "name": "やまだ",
         "card_id": 11001100,
         "grade": "B3",
     },
     {
-        "studentId": 2300000,
+        "student_id": 2300000,
         "name": "たなか",
         "card_id": 11111111,
         "grade": "M1",
@@ -104,6 +104,7 @@ def get_member_status():
                 break
         result.append(
             {
+                "student_id": i["student_id"],
                 "name": i["name"],
                 "status": status,
                 "grade": i["grade"],
