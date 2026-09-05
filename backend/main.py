@@ -13,7 +13,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 #ダミーデータてきな
 students = [
     {
@@ -38,7 +37,6 @@ class PostStudents(BaseModel):
     studentName:str
     cardId:int
     grade:str
-
 
 class AttendanceUpdate(BaseModel):
     status:int | None = None
@@ -109,7 +107,6 @@ def get_member_status():
                 "name": i["name"],
                 "status": status,
                 "grade": i["grade"],
-
             }
         )
     return result
@@ -128,8 +125,18 @@ def update_attendance(id:int,data:AttendanceUpdate):
     current.update(changes)
     return current
 
-#学生削除 mate
 
+#学生削除
+def find_student(student_id:int):
+    for i in students:
+        if i["student_id"] == student_id:
+            return i
+    raise HTTPException(status_code=404,detail="Student not found")
+
+@app.delete("/students/{student_id}")
+def delete_student(student_id:int):
+    current = find_student(student_id)
+    students.remove(current)
 
 #打刻削除
 @app.delete("/attendances/{id}")
