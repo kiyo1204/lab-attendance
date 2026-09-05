@@ -1,0 +1,210 @@
+/* 出席管理画面のCSS */
+
+/* ダッシュボード */
+.dashboard {
+    min-height: 100vh;
+    padding: 32px 60px;
+}
+
+.dashboard-header {
+    position: relative;
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 40px;
+}
+
+.dashboard-header h1 {
+    margin: 0;
+
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.menuButton {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.menuButton img {
+  width: 40px;
+  height: 40px;
+}
+
+/* 閉じている状態 */
+.menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+
+  width: 200px;
+  background: white;
+
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+
+  border: 1px solid #ccc;
+  border-radius: 8px;
+
+  transition:
+    max-height 0.3s ease,
+    opacity 0.3s ease;
+}
+
+/* 開いている状態 */
+.menu.open {
+  max-height: 300px;
+  opacity: 1;
+}
+
+.menu ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.menu li {
+    text-align: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #ccc;
+}
+
+
+/* 研究室の状態画面 */
+.lab-status-card {
+    background: white;
+
+    border: 1px solid #dbe2ea;
+
+    border-radius: 24px;
+
+    padding: 24px 40px;
+
+    margin-bottom: 24px;
+
+    min-height: 180px;
+}
+
+.lab-status-card h2 {
+    margin: 0 0 12px;
+
+    font-size: 22px;
+}
+
+.lab-status {
+    margin: 0;
+
+    font-size: 48px;
+    font-weight: bold;
+}
+
+
+/* 学生リスト */
+.member-card {
+    background: white;
+
+    border: 1px solid #dbe2ea;
+
+    border-radius: 24px;
+
+    padding: 18px 40px 32px
+}
+
+.member-card h2 {
+    margin-top: 0;
+
+    font-size: 22px;
+}
+
+.member-table {
+    max-width: 1100px;
+    
+    display: grid;
+    /* 人数が増えたら2列グリッドに変更 */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 40px;
+}
+
+.member-header, .member-row {
+    display: grid;
+
+    /* 3列設定 */
+    grid-template-columns:
+        minmax(0, 1fr)
+        80px
+        150px;
+    
+    align-items: center;
+
+    min-height: 58px;
+
+    border-bottom: 1px solid #dbe2ea;
+}
+
+.member-header {
+    font-size: 22px;
+
+    font-weight: bold;
+}
+
+.member-row {
+    font-size: 18px;
+}
+
+/* スマホ設定 */
+/* スマホ(横幅が小さいとき自動で1列に変換) */
+@media (max-width: 800px) {
+    .dashboard,
+    .register {
+        padding: 24px 16px;
+    }
+
+    .member-table {
+        grid-template-columns: 1fr;
+        column-gap: 0;
+    }
+
+    .member-column:nth-child(2) .member-header {
+        display: none;
+    }
+
+    .member-header,
+    .member-row {
+        grid-template-columns: minmax(0, 1fr) 60px 120px;
+    }
+
+    .status-badge {
+        width: 110px;
+    }
+}
+
+
+/* 出席状態バッチ */
+.status-badge {
+    display: inline-flex;
+
+    justify-content: center;
+    align-items: center;
+
+    width: 150px;
+    height: 38px;
+
+    border-radius: 8px;
+
+    color: white;
+
+    font-weight: bold;
+}
+
+.status-badge.present {
+    background: #22c55e;
+}
+
+.status-badge.absent {
+    background: #ef4444;
+}
