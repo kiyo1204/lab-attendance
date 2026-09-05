@@ -13,23 +13,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 #ダミーデータてきな
 students = [
     {
         "studentId": 2472124,
         "name": "やまだ",
-        "cardId": 11001100,
-        # 追加項目
+        "card_id": 11001100,
         "grade": "B3",
-        "status": "1"
     },
     {
         "studentId": 2300000,
         "name": "たなか",
-        "cardId": 11111111,
-        # 追加項目
+        "card_id": 11111111,
         "grade": "M1",
-        "status": "0"
     }
 ]
 
@@ -37,11 +34,10 @@ attendances = []
 
 #学生登録
 class PostStudents(BaseModel):
-    studentId: str
-    name: str
-    cardId: str
-    grade: str
-    status: str = "0"
+    studentId:int
+    studentName:str
+    cardId:int
+    grade:str
 
 
 class AttendanceUpdate(BaseModel):
@@ -56,11 +52,10 @@ class Punch(BaseModel):
 def post_students(data:PostStudents):
     students.append(
         {
-            "studentId":data.studentId,
-            "name":data.name,
-            "cardId":data.cardId,
-            # 追加項目
-            "grade": data.grade,
+            "student_id":data.studentId,
+            "name":data.studentName,
+            "card_id":data.cardId,
+            "grade":data.grade,
         }
     )
 
@@ -88,7 +83,6 @@ def punch(data:Punch):
                             "id": len(attendances)+1,
                             "student_id": i["student_id"],
                             "status": new_status,
-                            #"punched_at":あとでしらべる
                         }
                 )
             return {"studentName":i["name"],"status":new_status}
@@ -98,6 +92,27 @@ def punch(data:Punch):
 @app.get("/attendances")
 def get_attendances():
     return attendances
+
+#reactに返す用
+@app.get("/students/status")
+def get_member_status():
+    result = []
+
+    for i in students:
+        status = 0
+        for j in reversed(attendances):
+            if i["student_id"] == j["student_id"]:
+                status = j["status"]
+                break
+        result.append(
+            {
+                "name": i["name"],
+                "status": status,
+                "grade": i["grade"],
+
+            }
+        )
+    return result
 
 #打刻修正
 def find_punch(id:int):
@@ -113,14 +128,11 @@ def update_attendance(id:int,data:AttendanceUpdate):
     current.update(changes)
     return current
 
+#学生削除 mate
+
+
 #打刻削除
-#あとでねーーー
-
-
-
-# -- 研究室の状態の操作 Edit by kiyo --
-test_status = "ゼミ中"
-
-@app.get("/labStatus")
-def get_labStatus():
-    return test_status
+@app.delete("/attendances/{id}")
+def delete_punch(id: int):
+    current = find_punch(id)
+    attendances.remove(current)
