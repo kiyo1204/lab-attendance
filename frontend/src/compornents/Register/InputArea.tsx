@@ -20,34 +20,43 @@ export default function StudentRegisterForm() {
 
     const connectReader = async () => {
         if (readerRef.current) {
-            readerRef.current
+            return readerRef.current
         }
     
-    const reader = await WebUsbCardReader.connect(
-        ["RC-S300/P"],
-        false
-    )
-    if (!reader) {
-        throw new Error("リーダーに接続できませんでした")
-    }
+        const reader = await WebUsbCardReader.connect(
+            ["RC-S300/P"],
+            true
+        )
 
-    readerRef.current = reader
-    return reader
-}
-
-const WaitForReader = async (
-    reader: WebUsbCardReader
-): Promise<string> => {
-    while (true) {
-        const result = await reader.polling()
-
-        if (result) {
-            return result.idm
+        if (!reader) {
+            throw new Error("リーダーに接続できませんでした")
         }
 
-        await sleep(200)
+        readerRef.current = reader
+        return reader
     }
-}
+
+    const WaitForReader = async (
+        reader: WebUsbCardReader
+    ): Promise<string> => {
+        while (true) {
+            console.log("カード待機中...")
+
+            const result = await reader.polling(10)
+
+            console.log("polling result:", result)
+
+            if (result?.idm) {
+                console.log("カード検出完了")
+                console.log("IDm:", result.idm)
+
+                return result.idm
+            }
+
+            console.log("カード未検出")
+            await sleep(300)
+        }
+    }
 
 const handleSubmit = async (
     e: FormEvent<HTMLFormElement>
@@ -63,14 +72,14 @@ const handleSubmit = async (
         setIsWaiting(true)
 
         // リーダー接続(一旦接続なし)
-        //const reader = await connectReader()
+        const reader = await connectReader()
 
         // カード待機
         setStatus("カードをタッチしてください")
 
         // 一旦接続なしでテスト
-        // const cardId = await WaitForReader(reader)
-        const cardId = "ABC"
+        const card_id = await WaitForReader(reader)
+        //const cardId = "ABC"
 
         // ID取得
         setStatus("カードを読み取りました．登録中...")
@@ -82,9 +91,9 @@ const handleSubmit = async (
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                studentId: studentNumber.trim(),
+                student_id: studentNumber.trim(),
                 name: name.trim(),
-                cardId: cardId.trim(), 
+                card_id: card_id.trim(), 
                 grade: `${course}${grade}`,
             })
         })

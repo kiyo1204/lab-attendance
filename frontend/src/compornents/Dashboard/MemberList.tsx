@@ -15,7 +15,7 @@ const MemberList = () => {
     const [error, setError] = useState("")
 
     useEffect( () => {
-        fetch("http://127.0.0.1:8000/students").then( (res) => {
+        fetch("http://127.0.0.1:8000/students/status").then( (res) => {
             if (!res.ok) throw new Error ("HTTP ${res.status}")
             return res.json()
         }).then(setMembers).catch( (e) => setError(e.message))
