@@ -2,8 +2,7 @@ import { useRef, useState } from "react"
 import type { FormEvent } from "react"
 import { WebUsbCardReader } from "@ogrtk/simple-felica-reader"
 
-const sleep = (ms: number) => 
-    new Promise((resolve) => setTimeout(resolve, ms))
+import { connectReader, WaitForReader } from "../connectReader/connect"
 
 export default function StudentRegisterForm() {
     // リーダー読み込み
@@ -17,37 +16,6 @@ export default function StudentRegisterForm() {
 
     const [status, setStatus] = useState("")
     const [isWaiting, setIsWaiting] = useState(false)
-
-    const connectReader = async () => {
-        if (readerRef.current) {
-            readerRef.current
-        }
-    
-    const reader = await WebUsbCardReader.connect(
-        ["RC-S300/P"],
-        false
-    )
-    if (!reader) {
-        throw new Error("リーダーに接続できませんでした")
-    }
-
-    readerRef.current = reader
-    return reader
-}
-
-const WaitForReader = async (
-    reader: WebUsbCardReader
-): Promise<string> => {
-    while (true) {
-        const result = await reader.polling()
-
-        if (result) {
-            return result.idm
-        }
-
-        await sleep(200)
-    }
-}
 
 const handleSubmit = async (
     e: FormEvent<HTMLFormElement>
@@ -63,14 +31,14 @@ const handleSubmit = async (
         setIsWaiting(true)
 
         // リーダー接続(一旦接続なし)
-        //const reader = await connectReader()
+        const reader = await connectReader(readerRef)
 
         // カード待機
         setStatus("カードをタッチしてください")
 
         // 一旦接続なしでテスト
-        // const cardId = await WaitForReader(reader)
-        const cardId = "ABC"
+        const card_id = await WaitForReader(reader)
+        //const cardId = "ABC"
 
         // ID取得
         setStatus("カードを読み取りました．登録中...")
@@ -82,9 +50,9 @@ const handleSubmit = async (
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                studentId: studentNumber.trim(),
+                student_id: studentNumber.trim(),
                 name: name.trim(),
-                cardId: cardId.trim(), 
+                card_id: card_id.trim(), 
                 grade: `${course}${grade}`,
             })
         })
