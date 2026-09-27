@@ -16,15 +16,15 @@ app.add_middleware(
 #ダミーデータてきな
 students = [
     {
-        "student_id": 2472124,
+        "student_id": "2472124",
         "name": "やまだ",
-        "card_id": 11001100,
+        "card_id": "11001100",
         "grade": "B3",
     },
     {
-        "student_id": 2300000,
+        "student_id": "2300000",
         "name": "たなか",
-        "card_id": 11111111,
+        "card_id": "11111111",
         "grade": "M1",
     }
 ]
@@ -33,26 +33,31 @@ attendances = []
 
 #学生登録
 class PostStudents(BaseModel):
-    studentId:int
-    studentName:str
-    cardId:int
-    grade:str
+    student_id: str
+    name: str
+    card_id: str
+    grade: str
+
+#学生情報修正用
+class StudentUpdate(BaseModel):
+    name:str | None = None
+    grade:str | None = None
 
 class AttendanceUpdate(BaseModel):
     status:int | None = None
 
 #打刻
 class Punch(BaseModel):
-    cardId:int
+    card_id: str
 
 #学生登録
 @app.post("/students")
 def post_students(data:PostStudents):
     students.append(
         {
-            "student_id":data.studentId,
-            "name":data.studentName,
-            "card_id":data.cardId,
+            "student_id":data.student_id,
+            "name":data.name,
+            "card_id":data.card_id,
             "grade":data.grade,
         }
     )
@@ -66,7 +71,7 @@ def get_students():
 @app.post("/punch")
 def punch(data:Punch):
     for i in students:
-        if i["card_id"] == data.cardId:
+        if i["card_id"] == data.card_id:
             new_status = 1
             for j in reversed(attendances):
                 if i["student_id"] == j["student_id"]:
@@ -112,6 +117,26 @@ def get_member_status():
         )
     return result
 
+#カードから学生情報取得
+def find_student_by_card(card_id:str):
+    for i in students:
+        if i["card_id"] == card_id:
+            return i
+    raise HTTPException(status_code=404, detail="Student not found")
+
+@app.get("/students/card/{card_id}")
+def get_student_by_card(card_id:str):
+    student = find_student_by_card(card_id)
+    return student
+
+#学生修正
+@app.patch("/students/card/{card_id}")
+def update_student(card_id:str,data:StudentUpdate):
+    current = find_student_by_card(card_id)
+    changes = data.model_dump(exclude_unset=True)
+    current.update(changes)
+    return current
+
 #打刻修正
 def find_punch(id:int):
     for i in attendances:
@@ -128,14 +153,14 @@ def update_attendance(id:int,data:AttendanceUpdate):
 
 
 #学生削除
-def find_student(student_id:int):
+def find_student(student_id:str):
     for i in students:
         if i["student_id"] == student_id:
             return i
     raise HTTPException(status_code=404,detail="Student not found")
 
 @app.delete("/students/{student_id}")
-def delete_student(student_id:int):
+def delete_student(student_id:str):
     current = find_student(student_id)
     students.remove(current)
 
