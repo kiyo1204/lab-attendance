@@ -4,14 +4,29 @@ import { WebUsbCardReader } from "@ogrtk/simple-felica-reader"
 export const sleep = (ms: number) => 
     new Promise((resolve) => setTimeout(resolve, ms))
 
-export const connectReader = async (
-    readerRef: RefObject<WebUsbCardReader | null>
-    ) => {
-    if (readerRef.current) {
-        return readerRef.current
+let readerInstance: WebUsbCardReader | null = null
+
+let connectingPromise: Promise<WebUsbCardReader> | null = null
+
+let usbQueue: Promise<void> = Promise.resolve()
+
+export const connectReader = async (): Promise<WebUsbCardReader> => {
+    // すでに取得済みなら再接続しない
+    if (readerInstance) {
+        console.log("既存のカードリーダーを使用")
+        return readerInstance
     }
+
+    // 接続処理中ならその接続を待つ
+    if (connectingPromise) {
+        console.log("カードリーダー接続待ち")
+        return connectingPromise
+    }
+
+    console.log("カードリーダー新規接続")
     
-    const reader = await WebUsbCardReader.connect(
+    connectingPromise = (async() => {
+        const reader = await WebUsbCardReader.connect(
             ["RC-S300/P"],
             true
         )
@@ -20,28 +35,23 @@ export const connectReader = async (
             throw new Error("リーダーに接続できませんでした")
         }
 
-    readerRef.current = reader
-    return reader
+        readerInstance = reader
+        
+        return reader
+    })()
+
+    try {
+        return await connectingPromise
+    } finally {
+        connectingPromise = null
+    }
 }
 
-export const WaitForReader = async (
-        reader: WebUsbCardReader
-    ): Promise<string> => {
-        while (true) {
-            console.log("カード待機中...")
+// USB操作を直列化してPollingの二重実行を防ぐ
+export const pollingReader = async (maxTryCount = 1) => {
+    const reader = await connectReader()
 
-            const result = await reader.polling(10)
+    const result = await reader.polling(maxTryCount)
 
-            console.log("polling result:", result)
-
-            if (result?.idm) {
-                console.log("カード検出完了")
-                console.log("IDm:", result.idm)
-
-                return result.idm
-            }
-
-            console.log("カード未検出")
-            await sleep(300)
-        }
+    return result
 }

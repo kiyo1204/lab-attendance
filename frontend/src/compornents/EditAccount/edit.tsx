@@ -3,12 +3,9 @@ import type { FormEvent } from "react"
 import { WebUsbCardReader } from "@ogrtk/simple-felica-reader"
 import "./CSS/style.css"
 
-import { connectReader, WaitForReader, sleep } from "../connectReader/connect"
+import { connectReader, pollingReader, sleep } from "../connectReader/connect"
 
 export default function EditForm() {
-    // リーダー読み込み
-    const readerRef = useRef<WebUsbCardReader | null>(null)
-
     // 名前，学年，学籍番号
     const [name, setName] = useState("")
     const [course, setCourse] = useState("")
@@ -24,13 +21,19 @@ export default function EditForm() {
             setIsWaiting(true)
             console.log("カードリーダー自動接続")
 
-            const reader = await connectReader(readerRef)
+            await connectReader()
 
-            const card_id = await WaitForReader(reader)
+            const result = await pollingReader(1)
+
+            if (!result) {
+                return
+            }
+
+            const card_id = result.idm
 
             console.log("カード検出:", card_id)
 
-            const res = await fetch("http://127.0.0.1:8000/students/edit/lookup",
+            const res = await fetch(`http://127.0.0.1:8000/students/card/${card_id}`,
                 {
                     method: "POST",
                     headers: {
@@ -79,20 +82,26 @@ export default function EditForm() {
             setIsWaiting(true)
 
             // リーダー接続(一旦接続なし)
-            const reader = await connectReader(readerRef)
+            await connectReader()
 
             // カード待機
             setStatus("カードをタッチしてください")
 
             // 一旦接続なしでテスト
-            const card_id = await WaitForReader(reader)
+            const result = pollingReader(1)
+            
+            if (!result) {
+                return
+            }
+
+            const card_id = result.idm
             //const cardId = "ABC"
 
             // ID取得
             setStatus("カードを読み取りました．更新中...")
 
             // APIへ登録
-            const response = await fetch(`http://127.0.0.1:8000/students/${studentNumber}`, {
+            const response = await fetch(`http://127.0.0.1:8000/students/card/${card_id}`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
@@ -153,7 +162,7 @@ export default function EditForm() {
             <div className="divider"></div>
 
             {/* 編集フォーム */}
-            <form className="update-form">
+            <form className="update-form" onSubmit={handleSubmit}>
             
             {/* 名前 */}
             <div className="form-row">
@@ -256,7 +265,10 @@ export default function EditForm() {
                     <p>カードを変更する場合のみ，新しいカードをタッチしてください．</p>
                 </div>
 
-                <button type="button" className="change-card-button">
+                <button 
+                    type="submit"
+                    className="change-card-button"
+                >
                     新しいカードをタッチして更新
                 </button>
             </section>
