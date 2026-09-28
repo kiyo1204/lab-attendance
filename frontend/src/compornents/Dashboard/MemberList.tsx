@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import StatusBadge from "./StatusBadge"
 import type { MemberStatus, Member } from "../../types"
 import { connectReader, pollingReader, sleep } from "../connectReader/connect"
@@ -128,9 +128,7 @@ const MemberList = () => {
                 console.error("リーダーエラー:", error)
 
                 if (!cancelled) {
-                    setReaderStatus(
-                        "カードリーダーへの接続許可が必要です"
-                    )
+                    setReaderStatus("カードリーダーへの接続許可が必要です")
                 }
             }
         }
@@ -169,10 +167,7 @@ const MemberList = () => {
                         {
                             members.filter( (_, index) => index % 2 === column).map((member) => {
                                 const convertStatus:
-                                    MemberStatus =
-                                    member.status === 1
-                                        ? "在室"
-                                        : "退室"
+                                    MemberStatus = member.status === 1 ? "在室" : "退室"
 
                                 return (
                                     <div className="member-row" key={member.student_id}>

@@ -1,31 +1,23 @@
-import type { RefObject } from "react"
 import { WebUsbCardReader } from "@ogrtk/simple-felica-reader"
 
-export const sleep = (ms: number) => 
+export const sleep = (ms: number) =>
     new Promise((resolve) => setTimeout(resolve, ms))
 
 let readerInstance: WebUsbCardReader | null = null
 
 let connectingPromise: Promise<WebUsbCardReader> | null = null
 
-let usbQueue: Promise<void> = Promise.resolve()
-
 export const connectReader = async (): Promise<WebUsbCardReader> => {
-    // すでに取得済みなら再接続しない
     if (readerInstance) {
         console.log("既存のカードリーダーを使用")
         return readerInstance
     }
 
-    // 接続処理中ならその接続を待つ
     if (connectingPromise) {
-        console.log("カードリーダー接続待ち")
         return connectingPromise
     }
 
-    console.log("カードリーダー新規接続")
-    
-    connectingPromise = (async() => {
+    connectingPromise = (async () => {
         const reader = await WebUsbCardReader.connect(
             ["RC-S300/P"],
             true
@@ -36,7 +28,7 @@ export const connectReader = async (): Promise<WebUsbCardReader> => {
         }
 
         readerInstance = reader
-        
+
         return reader
     })()
 
@@ -47,11 +39,38 @@ export const connectReader = async (): Promise<WebUsbCardReader> => {
     }
 }
 
-// USB操作を直列化してPollingの二重実行を防ぐ
 export const pollingReader = async (maxTryCount = 1) => {
     const reader = await connectReader()
 
-    const result = await reader.polling(maxTryCount)
+    return await reader.polling(maxTryCount)
+}
 
-    return result
+/**
+ * カードがタッチされるまで待機する
+ */
+export const waitForCard = async (
+    isCancelled?: () => boolean
+): Promise<string | null> => {
+    console.log("カード待機開始")
+
+    while (true) {
+        if (isCancelled?.()) {
+            console.log("カード待機キャンセル")
+            return null
+        }
+
+        const result = await pollingReader(1)
+
+        if (isCancelled?.()) {
+            return null
+        }
+
+        if (result?.idm) {
+            console.log("カード検出:", result.idm)
+
+            return result.idm
+        }
+
+        await sleep(300)
+    }
 }

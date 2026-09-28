@@ -1,9 +1,8 @@
-import { useRef, useState } from "react"
+import { useRef, useState, useEffect } from "react"
 import type { FormEvent } from "react"
-import { WebUsbCardReader } from "@ogrtk/simple-felica-reader"
 import "./CSS/style.css"
 
-import { connectReader, pollingReader, sleep } from "../connectReader/connect"
+import { connectReader, waitForCard } from "../connectReader/connect"
 
 export default function EditForm() {
     // 名前，学年，学籍番号
@@ -16,6 +15,15 @@ export default function EditForm() {
     const [status, setStatus] = useState("")
     const [isWaiting, setIsWaiting] = useState(false)
 
+    const cancelledRef = useRef(false)
+    useEffect(() => {
+        cancelledRef.current = false
+
+        return () => {
+            cancelledRef.current = true
+        }
+    }, [])
+
     const Lookup = async () => {
         try {
             setIsWaiting(true)
@@ -23,13 +31,13 @@ export default function EditForm() {
 
             await connectReader()
 
-            const result = await pollingReader(1)
+            const card_id = await waitForCard(
+            () => cancelledRef.current
+            )
 
-            if (!result) {
+            if (!card_id) {
                 return
             }
-
-            const card_id = result.idm
 
             console.log("カード検出:", card_id)
 
@@ -50,7 +58,6 @@ export default function EditForm() {
 
                 console.error("参照失敗:", text)
 
-                await sleep(1000)
             } else {
                 const data = await res.json()
                 console.log("取得完了:", data)
@@ -65,6 +72,42 @@ export default function EditForm() {
             }
         } catch (error) {
             console.error("リーダーエラー:", error)
+        } finally {
+            if (!cancelledRef.current) {
+                setIsWaiting(false)
+            }
+        }
+    }
+
+    // 新しいカードIDだけ読み取る
+    const handleChangeCard = async () => {
+        try {
+            setIsWaiting(true)
+            setStatus("新しいカードをタッチしてください")
+
+            await connectReader()
+
+            const newCardId = await waitForCard(
+                () => cancelledRef.current
+            )
+
+            if (!newCardId) {
+                return
+            }
+
+            setCardId(newCardId)
+
+            setStatus("新しいカードを読み取りました．保存ボタンを押してください")
+        } catch (error) {
+            console.error(error)
+
+            if (!cancelledRef.current) {
+                setStatus("カードの読み取りに失敗しました")
+            }
+        } finally {
+            if (!cancelledRef.current) {
+                setIsWaiting(false)
+            }
         }
     }
 
@@ -73,63 +116,68 @@ export default function EditForm() {
     ) => {
         e.preventDefault()
 
-        if (!name.trim() || !studentNumber.trim() || !course || !grade) {
-            setStatus("名前，学年，学籍番号を入力してください")
+        if (
+            !name.trim() ||
+            !studentNumber.trim() ||
+            !course ||
+            !grade
+        ) {
+            setStatus(
+                "名前，学年，学籍番号を入力してください"
+            )
             return
         }
 
         try {
             setIsWaiting(true)
 
-            // リーダー接続(一旦接続なし)
             await connectReader()
 
-            // カード待機
-            setStatus("カードをタッチしてください")
+            setStatus("新しいカードをタッチしてください")
 
-            // 一旦接続なしでテスト
-            const result = pollingReader(1)
-            
-            if (!result) {
+            const card_id = await waitForCard(
+                () => cancelledRef.current
+            )
+
+            if (!card_id) {
                 return
             }
 
-            const card_id = result.idm
-            //const cardId = "ABC"
-
-            // ID取得
             setStatus("カードを読み取りました．更新中...")
 
-            // APIへ登録
-            const response = await fetch(`http://127.0.0.1:8000/students/card/${card_id}`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    student_id: studentNumber.trim(),
-                    name: name.trim(),
-                    card_id: card_id.trim(), 
-                    grade: `${course}${grade}`,
-                })
-            })
+            const response = await fetch(
+                `http://127.0.0.1:8000/students/card/${card_id}`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        student_id: studentNumber.trim(),
+                        name: name.trim(),
+                        card_id: card_id.trim(),
+                        grade: `${course}${grade}`,
+                    }),
+                }
+            )
 
             if (!response.ok) {
                 throw new Error("更新に失敗しました")
             }
 
-            // 完了
-            setStatus("更新しました")
-            setName("")
-            setCourse("B")
-            setGrade("1")
-            setStudentNumber("")
+            setCardId(card_id)
 
+            setStatus("更新しました")
         } catch (error) {
             console.error(error)
-            setStatus("更新に失敗しました")
+
+            if (!cancelledRef.current) {
+                setStatus("更新に失敗しました")
+            }
         } finally {
-            setIsWaiting(false)
+            if (!cancelledRef.current) {
+                setIsWaiting(false)
+            }
         }
     }
 
@@ -153,9 +201,8 @@ export default function EditForm() {
             <h2 className="section-title">情報変更</h2>
 
             {/* 成功表示 */}
-            {}
             <div className="success-message">
-                <span className="success-icon">{name ? "✓" : "✖"}</span>
+                <span className={`${name ? "successs": "none"}-icon`}>{name ? "✓" : "✖"}</span>
                 {name ? "カードを読み取りました" : "カードを読み込んでください"}
             </div>
 
@@ -266,10 +313,11 @@ export default function EditForm() {
                 </div>
 
                 <button 
-                    type="submit"
+                    type="button"
                     className="change-card-button"
+                    onClick={handleChangeCard}
                 >
-                    新しいカードをタッチして更新
+                    新しいカードをタッチ
                 </button>
             </section>
 
@@ -278,7 +326,13 @@ export default function EditForm() {
                     キャンセル
                 </button>
                 
-                <button type="submit" className="save-button">
+                <button 
+                    type="submit"
+                    className="save-button"
+                    disabled={
+                        isWaiting || !studentNumber
+                    }
+                >
                     保存
                 </button>
             </div>
