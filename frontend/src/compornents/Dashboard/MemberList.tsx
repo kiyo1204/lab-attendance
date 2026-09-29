@@ -7,6 +7,10 @@ const MemberList = () => {
     const [members, setMembers] = useState<Member[]>([])
 
     const [error, setError] = useState("")
+    const [readerStatus, setReaderStatus] = useState("リーダー接続中...")
+
+    const loadMembers = async () => {
+        const res = await fetch("http://127.0.0.1:8000/students/status")
 
     const [readerStatus, setReaderStatus] = useState("リーダー接続中...")
 
