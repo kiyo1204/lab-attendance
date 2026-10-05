@@ -105,11 +105,11 @@ const MemberList = () => {
 
                     if (data.status === 1) {
                         setReaderStatus(
-                            `${data.name}さん 入室しました`
+                            `${data.studentName}さん 入室しました`
                         )
                     } else {
                         setReaderStatus(
-                            `${data.name}さん 退室しました`
+                            `${data.studentName}さん 退室しました`
                         )
                     }
 
