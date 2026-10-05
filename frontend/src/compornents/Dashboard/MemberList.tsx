@@ -12,11 +12,6 @@ const MemberList = () => {
     const loadMembers = async () => {
         const res = await fetch("http://127.0.0.1:8000/students/status")
 
-    const [readerStatus, setReaderStatus] = useState("リーダー接続中...")
-
-    const loadMembers = async () => {
-        const res = await fetch("http://127.0.0.1:8000/students/status")
-
         if (!res.ok) {
             throw new Error(`HTTP ${res.status}`)
         }
