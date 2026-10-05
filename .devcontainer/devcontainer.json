@@ -1,45 +1,52 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/anaconda-postgres
 {
-  "name": "lab-attendance",
-  "dockerComposeFile": "compose.yaml",
-  "service": "web",
-  "workspaceFolder": "/app",
+	"name": "Lab-attendance",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "app",
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+	"features": {
+		"ghcr.io/devcontainers/features/node:2.1.0": {
+			"version": "20"
+		},
+		"ghcr.io/devcontainers-community/npm-features/typescript:1": {}
+	},
 
-  "features": {
-    "ghcr.io/devcontainers/features/node:2.1.0": {
-      "version": "20"
-    }
-  },
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [
+		5173,
+		8000,
+		3306
+	],
 
-  "forwardPorts": [
-    5173,
-    8000,
-    "db:3306"
-  ],
+	"portsAttributes": {
+		"8000": {
+			"label": "FastAPI"
+		},
+		"5173": {
+			"label": "vite"
+		},
+		"3306": {
+			"label": "db"
+		}
+	},
 
-  "portsAttributes": {
-    "8000": {
-      "label": "FastAPI"
-    },
-    "5173": {
-      "label": "Vite"
-    }
-  },
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "cd /workspaces/${localWorkspaceFolderBasename}/backend && python -m pip install -r requirements.txt && cd /app/frontend && npm install",
 
-  "postCreateCommand": "cd /app/backend && python -m pip install -r requirements.txt && cd /app/frontend && npm install",
+	// Configure tool-specific properties.
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				"dbaeumer.vscode-eslint",
+				"esbenp.prettier-vscode",
+				"eamodio.gitlens"
+			]
+		}
+	},
 
-  "postStartCommand": "bash /app/.devcontainer/start-dev.sh",
-
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        "ms-python.python",
-        "ms-python.vscode-pylance",
-        "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode",
-        "eamodio.gitlens"
-      ]
-    }
-  },
-
-  "remoteUser": "vscode"
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	"remoteUser": "vscode"
 }
