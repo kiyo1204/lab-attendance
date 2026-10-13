@@ -1,15 +1,9 @@
-import { useEffect, useRef, useState } from "react"
-import { WebUsbCardReader } from "@ogrtk/simple-felica-reader"
+import { useEffect, useState } from "react"
 import StatusBadge from "./StatusBadge"
 import type { MemberStatus, Member } from "../../types"
-import { connectReader, WaitForReader, sleep } from "../connectReader/connect"
+import { connectReader, pollingReader, sleep } from "../connectReader/connect"
 
 const MemberList = () => {
-    const readerRef = useRef<WebUsbCardReader | null>(null)
-
-    // 待機ループの二重起動防止
-    const runningRef = useRef(false)
-
     const [members, setMembers] = useState<Member[]>([])
 
     const [error, setError] = useState("")
@@ -33,27 +27,25 @@ const MemberList = () => {
     }, [])
 
     useEffect(() => {
-        if (runningRef.current) {
-            return
-        }
-
         let cancelled = false
 
         const startReader = async () => {
-            runningRef.current = true
-
             try {
-                console.log("カードリーダー自動接続")
+                console.log("カードリーダー処理開始")
 
-                const reader = await connectReader(readerRef)
+                await connectReader()
+
+                if (cancelled) {
+                    return
+                }
 
                 setReaderStatus("カードをタッチしてください")
 
                 while (!cancelled) {
-                    console.log("カード待機中...")
-                    const result = await reader.polling(1)
+                    const result = await pollingReader(1)
 
                     if (cancelled) {
+                        console.log("polling後にcancelled")
                         break
                     }
 
@@ -68,7 +60,8 @@ const MemberList = () => {
 
                     setReaderStatus("打刻中...")
 
-                    const res = await fetch("http://127.0.0.1:8000/punch",
+                    const res = await fetch(
+                        "http://127.0.0.1:8000/punch",
                         {
                             method: "POST",
                             headers: {
@@ -80,6 +73,10 @@ const MemberList = () => {
                         }
                     )
 
+                    if (cancelled) {
+                        break
+                    }
+
                     if (!res.ok) {
                         const text = await res.text()
 
@@ -89,41 +86,56 @@ const MemberList = () => {
 
                         await sleep(1000)
 
-                        setReaderStatus("カードをタッチしてください")
+                        if (!cancelled) {
+                            setReaderStatus(
+                                "カードをタッチしてください"
+                            )
+                        }
 
                         continue
                     }
 
                     const data = await res.json()
 
+                    if (cancelled) {
+                        break
+                    }
+
                     console.log("打刻成功:", data)
 
                     if (data.status === 1) {
-                        setReaderStatus(`${data.name}さん 入室しました`)
+                        setReaderStatus(
+                            `${data.studentName}さん 入室しました`
+                        )
                     } else {
-                        setReaderStatus(`${data.name}さん 退室しました`)
+                        setReaderStatus(
+                            `${data.studentName}さん 退室しました`
+                        )
                     }
 
-                    // メンバー一覧更新
                     await loadMembers()
 
-                    // 同じカードの連続打刻防止
                     await sleep(1500)
 
-                    setReaderStatus("カードをタッチしてください")
+                    if (!cancelled) {
+                        setReaderStatus(
+                            "カードをタッチしてください"
+                        )
+                    }
                 }
             } catch (error) {
                 console.error("リーダーエラー:", error)
 
-                setReaderStatus("カードリーダーへの接続許可が必要です")
-            } finally {
-                runningRef.current = false
+                if (!cancelled) {
+                    setReaderStatus("カードリーダーへの接続許可が必要です")
+                }
             }
         }
 
         startReader()
 
         return () => {
+            console.log("MemberList cleanup")
             cancelled = true
         }
     }, [])
@@ -154,10 +166,7 @@ const MemberList = () => {
                         {
                             members.filter( (_, index) => index % 2 === column).map((member) => {
                                 const convertStatus:
-                                    MemberStatus =
-                                    member.status === 1
-                                        ? "在室"
-                                        : "退室"
+                                    MemberStatus = member.status === 1 ? "在室" : "退室"
 
                                 return (
                                     <div className="member-row" key={member.student_id}>

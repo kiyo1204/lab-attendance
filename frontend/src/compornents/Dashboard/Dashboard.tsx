@@ -28,7 +28,7 @@ function Dashboard() {
             <nav className={`menu ${isMenuOpen ? "open" : ""}`}>
                 <ul>
                     <li><Link to="/register">登録</Link></li>
-                    <li>情報変更</li>
+                    <li><Link to="/edit">情報変更</Link></li>
                 </ul>
             </nav>
         </header>

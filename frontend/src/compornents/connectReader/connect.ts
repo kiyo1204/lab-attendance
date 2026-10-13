@@ -1,17 +1,24 @@
-import type { RefObject } from "react"
 import { WebUsbCardReader } from "@ogrtk/simple-felica-reader"
 
-export const sleep = (ms: number) => 
+export const sleep = (ms: number) =>
     new Promise((resolve) => setTimeout(resolve, ms))
 
-export const connectReader = async (
-    readerRef: RefObject<WebUsbCardReader | null>
-    ) => {
-    if (readerRef.current) {
-        return readerRef.current
+let readerInstance: WebUsbCardReader | null = null
+
+let connectingPromise: Promise<WebUsbCardReader> | null = null
+
+export const connectReader = async (): Promise<WebUsbCardReader> => {
+    if (readerInstance) {
+        console.log("既存のカードリーダーを使用")
+        return readerInstance
     }
-    
-    const reader = await WebUsbCardReader.connect(
+
+    if (connectingPromise) {
+        return connectingPromise
+    }
+
+    connectingPromise = (async () => {
+        const reader = await WebUsbCardReader.connect(
             ["RC-S300/P"],
             true
         )
@@ -20,28 +27,50 @@ export const connectReader = async (
             throw new Error("リーダーに接続できませんでした")
         }
 
-    readerRef.current = reader
-    return reader
+        readerInstance = reader
+
+        return reader
+    })()
+
+    try {
+        return await connectingPromise
+    } finally {
+        connectingPromise = null
+    }
 }
 
-export const WaitForReader = async (
-        reader: WebUsbCardReader
-    ): Promise<string> => {
-        while (true) {
-            console.log("カード待機中...")
+export const pollingReader = async (maxTryCount = 1) => {
+    const reader = await connectReader()
 
-            const result = await reader.polling(10)
+    return await reader.polling(maxTryCount)
+}
 
-            console.log("polling result:", result)
+/**
+ * カードがタッチされるまで待機する
+ */
+export const waitForCard = async (
+    isCancelled?: () => boolean
+): Promise<string | null> => {
+    console.log("カード待機開始")
 
-            if (result?.idm) {
-                console.log("カード検出完了")
-                console.log("IDm:", result.idm)
-
-                return result.idm
-            }
-
-            console.log("カード未検出")
-            await sleep(300)
+    while (true) {
+        if (isCancelled?.()) {
+            console.log("カード待機キャンセル")
+            return null
         }
+
+        const result = await pollingReader(1)
+
+        if (isCancelled?.()) {
+            return null
+        }
+
+        if (result?.idm) {
+            console.log("カード検出:", result.idm)
+
+            return result.idm
+        }
+
+        await sleep(300)
+    }
 }
