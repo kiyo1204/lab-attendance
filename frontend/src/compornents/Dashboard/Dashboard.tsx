@@ -29,6 +29,7 @@ function Dashboard() {
                 <ul>
                     <li><Link to="/register">登録</Link></li>
                     <li><Link to="/edit">情報変更</Link></li>
+                    <li><Link to="/edit-lab-status">研究室状況の編集</Link></li>
                 </ul>
             </nav>
         </header>

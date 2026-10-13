@@ -1,8 +1,17 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 
-const LabStatus = () => {
+export default function LabStatus() {
     const [status, setStatus] = useState("不明")
+    
+    useEffect(() => {
+        const currentStatus = localStorage.getItem("status")
+        if (currentStatus === null){
+            return
+        } else {
+            setStatus(currentStatus)
+        }
+    }, [])
 
     return (
         <section className="lab-status-card">
@@ -14,5 +23,3 @@ const LabStatus = () => {
         </section>
     )
 }
-
-export default LabStatus
