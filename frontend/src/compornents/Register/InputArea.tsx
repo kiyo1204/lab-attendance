@@ -1,13 +1,9 @@
-import { useRef, useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import type { FormEvent } from "react"
-import { WebUsbCardReader } from "@ogrtk/simple-felica-reader"
 
-import { connectReader, WaitForReader } from "../connectReader/connect"
+import { connectReader, waitForCard } from "../connectReader/connect"
 
 export default function StudentRegisterForm() {
-    // リーダー読み込み
-    const readerRef = useRef<WebUsbCardReader | null>(null)
-
     // 名前，学年，学籍番号
     const [name, setName] = useState("")
     const [course, setCourse] = useState("B")
@@ -16,6 +12,15 @@ export default function StudentRegisterForm() {
 
     const [status, setStatus] = useState("")
     const [isWaiting, setIsWaiting] = useState(false)
+
+    const cancelledRef = useRef(false)
+        useEffect(() => {
+            cancelledRef.current = false
+    
+            return () => {
+                cancelledRef.current = true
+            }
+        }, [])
 
 const handleSubmit = async (
     e: FormEvent<HTMLFormElement>
@@ -31,20 +36,24 @@ const handleSubmit = async (
         setIsWaiting(true)
 
         // リーダー接続(一旦接続なし)
-        const reader = await connectReader(readerRef)
+        await connectReader()
 
         // カード待機
         setStatus("カードをタッチしてください")
 
-        // 一旦接続なしでテスト
-        const card_id = await WaitForReader(reader)
-        //const cardId = "ABC"
+        const card_id = await waitForCard(
+                        () => cancelledRef.current
+                    )
+        
+        if (!card_id) {
+            return
+        }
 
         // ID取得
         setStatus("カードを読み取りました．登録中...")
 
         // APIへ登録
-        const response = await fetch("/students", {
+        const response = await fetch("http://127.0.0.1:8000/students", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
