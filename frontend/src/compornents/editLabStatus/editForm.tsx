@@ -40,7 +40,7 @@ export default function EditForm() {
     return (
         <main className="edit-card">
 
-            <h2 className="section-title">情報変更</h2>
+            <h2 className="section-title">研究室状況変更</h2>
 
             <div className="divider"></div>
 
