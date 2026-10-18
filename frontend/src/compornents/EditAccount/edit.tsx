@@ -322,10 +322,6 @@ export default function EditForm() {
             </section>
 
             <div className="actions">
-                <button type="button" className="cancel-button">
-                    キャンセル
-                </button>
-                
                 <button 
                     type="submit"
                     className="save-button"
