@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PROJECT_ROOT="/app"
+PROJECT_ROOT="/workspaces/${localWorkspaceFolderBasename}"
 
 echo "=== start-dev.sh $(date) ===" > /tmp/start-dev.log
 
