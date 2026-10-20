@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PROJECT_ROOT="/app"
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo "=== start-dev.sh $(date) ===" > /tmp/start-dev.log
 
