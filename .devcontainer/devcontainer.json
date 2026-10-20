@@ -32,7 +32,9 @@
 	},
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "cd /workspaces/${localWorkspaceFolderBasename}/backend && python -m pip install -r requirements.txt && cd /app/frontend && npm install",
+	"postCreateCommand": "cd /workspaces/${localWorkspaceFolderBasename}/backend && python -m pip install -r requirements.txt && cd /workspaces/${localWorkspaceFolderBasename}/frontend && npm install",
+
+	 "postStartCommand": "bash /workspaces/${localWorkspaceFolderBasename}/.devcontainer/start-dev.sh",
 
 	// Configure tool-specific properties.
 	"customizations": {
