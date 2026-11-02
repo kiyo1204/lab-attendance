@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from sqlalchemy import URL, create_engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
-load_dotenv("../.devcontainer/")
+load_dotenv()
 
 # ベースクラス
 class Base(DeclarativeBase):

@@ -288,12 +288,12 @@ def update_student(card_id:str, data:StudentUpdate, db: SessionDep):
             return i
     raise HTTPException(status_code=404,detail="ID not found")"""
 
-@app.patch("/attendances/{id}")
+"""@app.patch("/attendances/{id}")
 def update_attendance(id:int,data:AttendanceUpdate):
     current = find_punch(id)
     changes = data.model_dump(exclude_unset=True)
     current.update(changes)
-    return current
+    return current"""
 
 
 #学生削除
