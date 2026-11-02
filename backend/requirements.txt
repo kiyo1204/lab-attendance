@@ -1,2 +1,4 @@
-fastapi[standard]
+fastapi[standard]<0.142.0
 pydantic==2.13.4
+SQLAlchemy==2.0.34
+PyMySQL==1.2.3
