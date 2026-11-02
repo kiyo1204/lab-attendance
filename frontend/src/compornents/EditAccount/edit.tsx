@@ -43,13 +43,7 @@ export default function EditForm() {
 
             const res = await fetch(`http://127.0.0.1:8000/students/card/${card_id}`,
                 {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        card_id: card_id.trim(),
-                    }),
+                    method: "GET"
                 }
             )
 

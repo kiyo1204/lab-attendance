@@ -1,12 +1,14 @@
 
+-- 状態マスター初期データ
+
 INSERT INTO status_types (
-    status_id,
+    status_code,
     status_name,
-    is_present
+    counts_as_present,
+    sort_order,
+    is_active
 )
 VALUES
-    (1, '在室', TRUE),
-    (2, '不在', FALSE),
-    (3, '授業', FALSE),
-    (4, '休憩', FALSE),
-    (5, 'その他', FALSE);
+    ('OUT', '退室', FALSE, 0, TRUE),
+    ('IN', '入室', TRUE, 1, TRUE),
+    ('AWAY', '一時退室', FALSE, 2, TRUE);
