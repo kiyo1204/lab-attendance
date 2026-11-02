@@ -1,0 +1,48 @@
+{
+  "hash": "c6e7ba50",
+  "configHash": "57c4b0f8",
+  "lockfileHash": "76772e2c",
+  "browserHash": "060297f4",
+  "optimized": {
+    "@ogrtk/simple-felica-reader": {
+      "src": "../../node_modules/@ogrtk/simple-felica-reader/dist/index.js",
+      "file": "@ogrtk_simple-felica-reader.js",
+      "fileHash": "a7330fba",
+      "needsInterop": false
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "85dabcf2",
+      "needsInterop": true
+    },
+    "react-router-dom": {
+      "src": "../../node_modules/react-router-dom/dist/index.mjs",
+      "file": "react-router-dom.js",
+      "fileHash": "a233e277",
+      "needsInterop": false
+    },
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "1c46795e",
+      "needsInterop": true
+    },
+    "react/jsx-dev-runtime": {
+      "src": "../../node_modules/react/jsx-dev-runtime.js",
+      "file": "react_jsx-dev-runtime.js",
+      "fileHash": "293a8b83",
+      "needsInterop": true
+    }
+  },
+  "chunks": {
+    "react-dom-BHYFKdWu": {
+      "file": "react-dom-BHYFKdWu.js",
+      "isDynamicEntry": false
+    },
+    "rolldown-runtime-DC62tzP2": {
+      "file": "rolldown-runtime-DC62tzP2.js",
+      "isDynamicEntry": false
+    }
+  }
+}

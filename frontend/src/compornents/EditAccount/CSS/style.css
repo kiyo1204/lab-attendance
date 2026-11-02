@@ -94,8 +94,8 @@
 
   border-radius: 8px;
 
-  background: #e9f8ef;
-  color: #14834d;
+  background: #c1c4c1;
+  color: #000000;
 
   font-size: 16px;
   font-weight: 700;
@@ -112,6 +112,22 @@
   border-radius: 50%;
 
   background: #1f9a5f;
+  color: white;
+
+  font-size: 17px;
+}
+
+.none-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 26px;
+  height: 26px;
+
+  border-radius: 50%;
+
+  background: #f30808;
   color: white;
 
   font-size: 17px;
